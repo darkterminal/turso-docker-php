@@ -1,0 +1,48 @@
+#!/bin/bash
+
+usage() {
+    echo "Usage: $0 [OPTION]"
+    echo "  OPTION:"
+    echo "    -b, --background   Run Docker container in the background"
+    echo "    -h, --help         Display this help message"
+}
+
+default_command() {
+    docker compose down
+    # this command will remove docker image base on your composer.yml container_name
+    docker image rm turso-docker-php
+    docker image rm turso-docker-image-app
+    docker compose up --remove-orphans
+}
+
+background_command() {
+    docker compose down
+    # this command will remove docker image base on your composer.yml container_name
+    docker image rm turso-docker-php
+    docker image rm turso-docker-image-app
+    docker compose up --remove-orphans -d
+}
+
+if [ $# -eq 0 ]; then
+    default_command
+    exit 0
+fi
+
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -b|--background)
+            background_command
+            exit 0
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Error: Unknown option '$1'"
+            usage
+            exit 1
+            ;;
+    esac
+    shift
+done
