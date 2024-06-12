@@ -4,7 +4,8 @@ Starter Template to start using Turso Database in Native PHP!
 
 ## Requirement
 
-- [Turo CLI](https://docs.turso.tech/quickstart)
+- [Turso CLI](https://docs.turso.tech/quickstart)
+- [VSCode Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
 If you want to connect with remote database and embedded replica, you will need an existing database to continue. If you don’t have one, [create one](https://docs.turso.tech/quickstart).
 
@@ -43,13 +44,15 @@ or Clone using Git HTTPS
 git clone https://github.com/tursodatabase/turso-docker-php.git
 ```
 
-then move to directory you just cloned:
+Open directory you just cloned in VSCode then `cmd/ctrl+shift-p` > `Dev Containers: Reopen in Container`:
 
 ```bash
-cd turso-docker-php
-
-chmod +x start scripts/download-libsql-php
-./start -b
+Usage: ./start [OPTION]
+  OPTION:
+    -d, --daemon       Run PHP server in the background
+    -s, --status       Show the status of the PHP server
+    -k, --stop         Stop the PHP server
+    -h, --help         Display this help message
 ```
 
 Now! Open this address in browser: http://localhost:1945

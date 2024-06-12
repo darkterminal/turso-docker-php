@@ -1,48 +1,78 @@
 #!/bin/bash
 
+# Function to display usage information
 usage() {
     echo "Usage: $0 [OPTION]"
     echo "  OPTION:"
-    echo "    -b, --background   Run Docker container in the background"
+    echo "    -d, --daemon       Run PHP server in the background"
+    echo "    -s, --status       Show the status of the PHP server"
+    echo "    -k, --stop         Stop the PHP server"
     echo "    -h, --help         Display this help message"
 }
 
-default_command() {
-    docker compose down
-    # this command will remove docker image base on your composer.yml container_name
-    docker image rm turso-docker-php
-    docker image rm turso-docker-image-app
-    docker compose up --remove-orphans
+# Function to get the PID of the PHP server
+get_pid() {
+    pgrep -f "php -S 127.0.01:1945"
 }
 
-background_command() {
-    docker compose down
-    # this command will remove docker image base on your composer.yml container_name
-    docker image rm turso-docker-php
-    docker image rm turso-docker-image-app
-    docker compose up --remove-orphans -d
-}
-
-if [ $# -eq 0 ]; then
-    default_command
-    exit 0
-fi
+# Parse command line arguments
+BACKGROUND=0
+STATUS=0
+STOP=0
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
-        -b|--background)
-            background_command
-            exit 0
+        -d|--daemon)
+            BACKGROUND=1
+            shift
+            ;;
+        -s|--status)
+            STATUS=1
+            shift
+            ;;
+        -k|--stop)
+            STOP=1
+            shift
             ;;
         -h|--help)
             usage
             exit 0
             ;;
         *)
-            echo "Error: Unknown option '$1'"
+            echo "Unknown option: $1"
             usage
             exit 1
             ;;
     esac
-    shift
 done
+
+# Show status of the PHP server
+if [[ $STATUS -eq 1 ]]; then
+    PID=$(get_pid)
+    if [[ -z "$PID" ]]; then
+        echo "PHP server is not running."
+    else
+        echo "PHP server is running with PID: $PID"
+    fi
+    exit 0
+fi
+
+# Stop the PHP server
+if [[ $STOP -eq 1 ]]; then
+    PID=$(get_pid)
+    if [[ -z "$PID" ]]; then
+        echo "PHP server is not running."
+    else
+        kill $PID
+        echo "PHP server (PID: $PID) stopped."
+    fi
+    exit 0
+fi
+
+# Start the PHP server
+if [[ $BACKGROUND -eq 1 ]]; then
+    php -S 127.0.0.1:1945 > /dev/null 2>&1 &
+    echo "PHP server is running in the background (PID: $!)"
+else
+    php -S 127.0.0.1:1945
+fi

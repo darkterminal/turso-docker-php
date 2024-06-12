@@ -1,0 +1,10 @@
+{
+	"name": "Turso Workspace",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"mounts": [
+		"source=${localWorkspaceFolder}/config/php.ini,target=/usr/local/etc/php/php.ini,type=bind,consistency=cached"
+	],
+	"onCreateCommand": "./scripts/download-libsql-php"
+}

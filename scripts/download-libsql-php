@@ -1,76 +1,104 @@
 #!/bin/env php
-
 <?php
 
-$REPO = "tursodatabase/turso-client-php";
+function download_extextion()
+{
+    $REPO = "tursodatabase/turso-client-php";
 
-$OS = strtolower(php_uname('s'));
-$ARCH = php_uname('m');
+    $OS = strtolower(php_uname('s'));
+    $ARCH = php_uname('m');
 
-echo "Detected OS: $OS\n";
-echo "Detected architecture: $ARCH\n";
+    echo "Detected OS: $OS\n";
+    echo "Detected architecture: $ARCH\n";
 
-switch ($OS) {
-    case 'darwin':
-        if ($ARCH == "x86_64") {
-            $SUFFIX = "x86_64-apple-darwin";
-        } else {
-            echo "Unsupported architecture: $ARCH for Darwin\n";
+    switch ($OS) {
+        case 'darwin':
+            if ($ARCH == "x86_64") {
+                $SUFFIX = "x86_64-apple-darwin";
+            } else {
+                echo "Unsupported architecture: $ARCH for Darwin\n";
+                exit(1);
+            }
+            break;
+        case 'linux':
+            if ($ARCH == "x86_64") {
+                $SUFFIX = "x86_64-unknown-linux-gnu";
+            } else {
+                echo "Unsupported architecture: $ARCH for Linux\n";
+                exit(1);
+            }
+            break;
+        default:
+            echo "Unsupported OS: $OS\n";
             exit(1);
-        }
-        break;
-    case 'linux':
-        if ($ARCH == "x86_64") {
-            $SUFFIX = "x86_64-unknown-linux-gnu";
-        } else {
-            echo "Unsupported architecture: $ARCH for Linux\n";
-            exit(1);
-        }
-        break;
-    default:
-        echo "Unsupported OS: $OS\n";
-        exit(1);
-}
-
-// Fetch the latest release information
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, "https://api.github.com/repos/$REPO/releases/latest");
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt($ch, CURLOPT_HTTPHEADER, ["User-Agent: darkterminal"]);
-$RELEASE_DATA = curl_exec($ch);
-curl_close($ch);
-
-$release = json_decode($RELEASE_DATA, true);
-$assets = $release['assets'];
-
-$download_url = null;
-
-foreach ($assets as $asset) {
-    if (strpos($asset['name'], $SUFFIX) !== false) {
-        $download_url = $asset['browser_download_url'];
     }
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "https://api.github.com/repos/$REPO/releases/latest");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ["User-Agent: darkterminal"]);
+    $RELEASE_DATA = curl_exec($ch);
+    curl_close($ch);
+
+    $release = json_decode($RELEASE_DATA, true);
+    $assets = $release['assets'];
+
+    $download_url = null;
+
+    foreach ($assets as $asset) {
+        if (strpos($asset['name'], $SUFFIX) !== false) {
+            $download_url = $asset['browser_download_url'];
+        }
+    }
+
+    if ($download_url === null) {
+        echo "Download URL is not found!" . PHP_EOL;
+        exit(1);
+    }
+
+    $output_file = basename($download_url);
+    exec("curl -L $download_url -o $output_file");
+
+    sleep(2);
+
+    exec("tar -xzf $output_file");
+
+    sleep(2);
+
+    $directory = str_replace('.tar.gz', '', $output_file);
+
+    exec("mv $directory/* config/extensions/");
+
+    exec("rm $output_file");
+    rmdir($directory);
+
+    echo "Downloaded release asset to $output_file" . PHP_EOL;
+
 }
 
-if ($download_url === null) {
-    echo "Download URL is not found!" . PHP_EOL;
-    exit(1);
+$extension_dir = "config/extensions";
+$search_string = "libsql";
+
+if (is_dir($extension_dir)) {
+    $dir = opendir($extension_dir);
+    if ($dir) {
+        $found = false;
+        while (($file = readdir($dir)) !== false) {
+            if (strpos($file, $search_string) !== false) {
+                $found = true;
+                break;
+            }
+        }
+        closedir($dir);
+
+        if ($found) {
+            echo "Your workspace is ready!\n";
+        } else {
+            download_extextion();
+        }
+    } else {
+        echo "Failed to open directory $extension_dir\n";
+    }
+} else {
+    echo "$extension_dir is not a valid directory\n";
 }
-
-// Download the asset using PHP
-$output_file = basename($download_url);
-exec("curl -L $download_url -o $output_file");
-
-sleep(2);
-
-exec("tar -xzf $output_file");
-
-sleep(2);
-
-$directory = str_replace('.tar.gz', '', $output_file);
-
-exec("mv $directory/* config/extensions/");
-
-exec("rm $output_file");
-rmdir($directory);
-
-echo "Downloaded release asset to $output_file" . PHP_EOL;
