@@ -55,6 +55,6 @@ Usage: ./start [OPTION]
     -h, --help         Display this help message
 ```
 
-Now! Open this address in browser: http://localhost:1945
+Now! Open this address in browser: http://127.0.0.1:1945
 
 > Default connection is using local database file!
