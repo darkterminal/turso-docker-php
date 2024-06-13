@@ -1,10 +1,105 @@
 {
-	"name": "Turso Workspace",
-	"build": {
-		"dockerfile": "Dockerfile"
-	},
-	"mounts": [
-		"source=${localWorkspaceFolder}/config/php.ini,target=/usr/local/etc/php/php.ini,type=bind,consistency=cached"
-	],
-	"onCreateCommand": "./scripts/download-libsql-php"
+    "name": "Turso Workspace",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "workspaceMount": "source=${localWorkspaceFolder}/workspace,target=/workspace,type=bind,consistency=cached", 
+    "workspaceFolder": "/workspace",
+    "mounts": [
+        "source=${localWorkspaceFolder}/config/php.ini,target=/usr/local/etc/php/php.ini,type=bind,consistency=cached",
+        "source=${localWorkspaceFolder}/config,target=/ext-config,type=bind,consistency=cached"
+    ],
+    "onCreateCommand": "/ext-config/scripts/download-libsql-php",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "DEVSENSE.phptools-vscode",
+                "DEVSENSE.composer-php-vscode",
+                "DEVSENSE.profiler-php-vscode",
+                "neilbrayfield.php-docblocker",
+                "bmewburn.vscode-intelephense-client",
+                "esbenp.prettier-vscode",
+                "st-pham.php-refactor-tool"
+            ],
+            "settings": {
+                "intelephense.stubs": [
+                    "apache",
+                    "bcmath",
+                    "bz2",
+                    "calendar",
+                    "com_dotnet",
+                    "Core",
+                    "ctype",
+                    "curl",
+                    "date",
+                    "dba",
+                    "dom",
+                    "enchant",
+                    "exif",
+                    "FFI",
+                    "fileinfo",
+                    "filter",
+                    "fpm",
+                    "ftp",
+                    "gd",
+                    "gettext",
+                    "gmp",
+                    "hash",
+                    "iconv",
+                    "imap",
+                    "intl",
+                    "json",
+                    "ldap",
+                    "libxml",
+                    "mbstring",
+                    "meta",
+                    "mysqli",
+                    "oci8",
+                    "odbc",
+                    "openssl",
+                    "pcntl",
+                    "pcre",
+                    "PDO",
+                    "pdo_ibm",
+                    "pdo_mysql",
+                    "pdo_pgsql",
+                    "pdo_sqlite",
+                    "pgsql",
+                    "Phar",
+                    "posix",
+                    "pspell",
+                    "random",
+                    "readline",
+                    "Reflection",
+                    "session",
+                    "shmop",
+                    "SimpleXML",
+                    "snmp",
+                    "soap",
+                    "sockets",
+                    "sodium",
+                    "SPL",
+                    "sqlite3",
+                    "standard",
+                    "superglobals",
+                    "sysvmsg",
+                    "sysvsem",
+                    "sysvshm",
+                    "tidy",
+                    "tokenizer",
+                    "xml",
+                    "xmlreader",
+                    "xmlrpc",
+                    "xmlwriter",
+                    "xsl",
+                    "Zend OPcache",
+                    "zip",
+                    "zlib",
+                    "/ext-config/extensions"
+                ],
+                "intelliphp.inlineSuggestionsEnabled": false,
+                "php.problems.scope": "none"
+            }
+        }
+    }
 }

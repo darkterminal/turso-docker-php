@@ -67,7 +67,7 @@ function download_extextion()
 
     $directory = str_replace('.tar.gz', '', $output_file);
 
-    exec("mv $directory/* config/extensions/");
+    exec("mv $directory/* /ext-config/extensions/");
 
     exec("rm $output_file");
     rmdir($directory);
@@ -76,7 +76,7 @@ function download_extextion()
 
 }
 
-$extension_dir = "config/extensions";
+$extension_dir = "/ext-config/extensions";
 $search_string = "libsql";
 
 if (is_dir($extension_dir)) {
