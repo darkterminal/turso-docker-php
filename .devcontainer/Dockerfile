@@ -16,15 +16,8 @@ RUN apt-get update && apt-get install -y \
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.2.0/zsh-in-docker.sh)" -- \
-    -t robbyrussell \
-    -a 'SPACESHIP_PROMPT_ADD_NEWLINE="false"' \
-    -a 'SPACESHIP_PROMPT_SEPARATE_LINE="false"' \
-    -p git \
-    -p ssh-agent \
-    -p https://github.com/zsh-users/zsh-autosuggestions \
-    -p https://github.com/zsh-users/zsh-completions
+RUN composer global require darkterminal/turso-php-installer
 
-RUN chsh -s $(which zsh)
+RUN echo "export PATH=\"$(composer config -g home)/vendor/bin:$PATH\"" >> ~/.bashrc && . ~/.bashrc
 
-CMD ["zsh"]
+RUN turso-php-installer install --yes --php-version=8.3

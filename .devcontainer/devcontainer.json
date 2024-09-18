@@ -9,7 +9,6 @@
         "source=${localWorkspaceFolder}/config/php.ini,target=/usr/local/etc/php/php.ini,type=bind,consistency=cached",
         "source=${localWorkspaceFolder}/config,target=/ext-config,type=bind,consistency=cached"
     ],
-    "onCreateCommand": "/ext-config/scripts/download-libsql-php",
     "customizations": {
         "vscode": {
             "extensions": [
