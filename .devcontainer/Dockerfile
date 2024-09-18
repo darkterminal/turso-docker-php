@@ -18,6 +18,4 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 RUN composer global require darkterminal/turso-php-installer
 
-RUN echo "export PATH=\"$(composer config -g home)/vendor/bin:$PATH\"" >> ~/.bashrc && . ~/.bashrc
-
-RUN turso-php-installer install --yes --php-version=8.3
+RUN export PATH="$(composer config -g home)/vendor/bin:$PATH" && turso-php-installer install --yes --php-version=8.3
